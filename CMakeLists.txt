@@ -260,18 +260,25 @@ endif()
 
 # ---- Dedicated server ----
 if(BUILD_SERVER)
+  # Dedicated server needs server sources, null system, and console
   set(SERVER_SOURCES
     ${COMMON_SOURCES} ${BOTLIB_SOURCES}
+    ${CDIR}/server/sv_bot.c ${CDIR}/server/sv_ccmds.c ${CDIR}/server/sv_client.c
+    ${CDIR}/server/sv_game.c ${CDIR}/server/sv_init.c ${CDIR}/server/sv_main.c
+    ${CDIR}/server/sv_net_chan.c ${CDIR}/server/sv_snapshot.c ${CDIR}/server/sv_world.c
     ${CDIR}/null/null_client.c ${CDIR}/null/null_input.c ${CDIR}/null/null_snddma.c
+    ${CDIR}/sys/con_tty.c ${CDIR}/sys/sys_main.c ${CDIR}/sys/sys_unix.c
+    ${CDIR}/sys/sys_local.h
   )
 
-  file(GLOB SERVER_EXTRA ${CDIR}/sys/sys_unix.c ${CDIR}/sys/con_tty.c ${CDIR}/sys/sys_main.c)
-  list(APPEND SERVER_SOURCES ${SERVER_EXTRA})
-
   add_executable(smokinguns_dedicated ${SERVER_SOURCES})
+
   target_compile_options(smokinguns_dedicated PRIVATE -DDEDICATED)
+  target_compile_definitions(smokinguns_dedicated PRIVATE DEDICATED)
+
+  # Dedicated server doesn't need SDL3 or OpenGL
   target_link_libraries(smokinguns_dedicated PRIVATE
-    ${CMAKE_THREAD_LIBS_INIT} ${LINUX_LIBS}
+    ${CMAKE_THREAD_LIBS_INIT} ${LINUX_LIBS} z
   )
 endif()
 
